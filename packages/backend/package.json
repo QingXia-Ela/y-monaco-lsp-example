@@ -9,7 +9,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "elysia": "^1.0.27"
+    "elysia": "^1.0.27",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-ws-jsonrpc": "^3.3.2"
   },
   "scripts": {
     "dev": "bun run index.ts"
