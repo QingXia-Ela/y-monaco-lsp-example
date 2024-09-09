@@ -7,7 +7,7 @@ function launchLanguageServer(socket: IWebSocket) {
   const reader = new WebSocketMessageReader(socket);
   const writer = new WebSocketMessageWriter(socket);
   const socketConnection = createConnection(reader, writer, () => socket.dispose());
-  const serverConnection = createServerProcess("114514", `bun`, [`run ../language-server/index.ts`, '--stdio']);
+  const serverConnection = createServerProcess("114514", `bun`, [`run`, `../language-server/index.ts`, '--stdio']);
 
   if (serverConnection) {
     forward(socketConnection, serverConnection, message => {

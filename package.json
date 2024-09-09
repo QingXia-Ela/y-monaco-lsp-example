@@ -13,6 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/bun": "^1.1.6"
-  }
+    "@types/bun": "^1.1.6",
+    "typescript": "^5.2.2"
+  },
+  "workspaces": [
+    "packages/frontend",
+    "packages/backend",
+    "packages/language-server"
+  ]
 }

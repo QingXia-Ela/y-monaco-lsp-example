@@ -9,12 +9,26 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codingame/esbuild-import-meta-url-plugin": "^1.0.2",
+    "@codingame/monaco-vscode-json-default-extension": "^8.0.4",
+    "@codingame/monaco-vscode-rollup-vsix-plugin": "^8.0.4",
+    "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~6.0.3",
+    "monaco-editor-vanilla": "npm:monaco-editor@0.51.0",
+    "monaco-languageclient": "~8.6.0",
+    "tdesign-vue-next": "^1.9.7",
+    "vscode": "npm:@codingame/monaco-vscode-api@~6.0.3",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-ws-jsonrpc": "^3.3.2",
     "vue": "^3.4.29"
   },
   "devDependencies": {
+    "@codingame/monaco-vscode-textmate-service-override": "^7.0.5",
+    "@codingame/monaco-vscode-theme-service-override": "^7.0.5",
+    "@types/vscode": "^1.91.0",
     "@vitejs/plugin-vue": "^5.0.5",
+    "monaco-editor-wrapper": "~5.3.1",
     "typescript": "^5.2.2",
-    "vite": "^5.3.1",
+    "vite": "^5.3.3",
     "vue-tsc": "^2.0.21"
   }
 }
