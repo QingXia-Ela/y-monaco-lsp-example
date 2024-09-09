@@ -2,6 +2,8 @@ import Elysia from "elysia";
 import { WebSocketMessageReader, type IWebSocket, WebSocketMessageWriter } from "vscode-ws-jsonrpc";
 import { createServerProcess, createConnection, forward } from 'vscode-ws-jsonrpc/server'
 import { Message, InitializeRequest, type InitializeParams } from 'vscode-languageserver';
+import { } from 'y-websocket'
+import createYJSWebSocket from "./plugins/createYJSWebSocket";
 
 function launchLanguageServer(socket: IWebSocket) {
   const reader = new WebSocketMessageReader(socket);
@@ -34,6 +36,10 @@ const app = new Elysia();
 
 app
   .get("/", () => "Hello World!")
+  .use(createYJSWebSocket({
+    yjsServerPort: 1234,
+    serverPort: 30002
+  }))
   .ws("/grammar", {
     error: (e) => {
       socketFnMap["onError"]?.(e)
