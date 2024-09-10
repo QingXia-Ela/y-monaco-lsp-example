@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="flex gap-1">
-      <button type="button" @click="switchConnect" id="y-connect-btn">{{ COOPconnected ? 'Disconnect-COOP' :
+      <button type="button" @click="() => switchConnect()" id="y-connect-btn">{{ COOPconnected ? 'Disconnect-COOP' :
         'Connect-COOP'
         }}</button>
       <input type="text" id="y-name-input" placeholder="Your name">
@@ -26,9 +26,9 @@ import updateConnectorStyle from '../monaco/utils/updateConnectorStyle'
 const COOPconnected = ref(false)
 let outerProvider: WebsocketProvider | null = null
 
-function switchConnect() {
+function switchConnect(connect = !COOPconnected.value) {
   if (outerProvider) {
-    if (outerProvider.shouldConnect) {
+    if (outerProvider.shouldConnect || !connect) {
       outerProvider.disconnect()
       COOPconnected.value = false
     }
@@ -48,10 +48,15 @@ onMounted(async () => {
 
   switchConnect()
   provider.awareness.on("change", () => {
-    updateConnectorStyle(
-      Array.from(provider.awareness.meta.keys()),
-      document.getElementById("yRemoteUserStyle") as HTMLStyleElement
-    )
+    if (!provider.awareness.getLocalState()) {
+      switchConnect(false)
+    }
+    else {
+      updateConnectorStyle(
+        Array.from(provider.awareness.meta.keys()),
+        document.getElementById("yRemoteUserStyle") as HTMLStyleElement
+      )
+    }
   })
   // wrapper.
 })
