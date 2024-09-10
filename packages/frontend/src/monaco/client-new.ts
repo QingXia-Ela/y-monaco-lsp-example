@@ -15,6 +15,7 @@ import { WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode
 import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclient';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { conf, language } from 'monaco-editor-vanilla/esm/vs/basic-languages/mdx/mdx';
+import injectYjsToEditor from './inject-yjs';
 
 export const configureMonacoWorkers = () => {
   useWorkerFactory({
@@ -45,7 +46,7 @@ export const runClient = async () => {
   monaco.languages.setMonarchTokensProvider('mdx', language);
 
   // create monaco editor
-  monaco.editor.create(document.getElementById('monaco')!, {
+  const editor = monaco.editor.create(document.getElementById('monaco')!, {
     value: `### Hello World`,
     language: 'mdx',
     automaticLayout: true,
@@ -53,6 +54,17 @@ export const runClient = async () => {
     wordBasedSuggestions: 'off'
   });
   initWebSocketAndStartClient('ws://localhost:30002/grammar');
+  const {
+    provider,
+  } = injectYjsToEditor({
+    editor,
+    targetHost: 'ws://localhost:30002/yjs',
+    textID: 'monaco'
+  })
+
+  return {
+    provider
+  }
 };
 
 /** parameterized version , support all languageId */
