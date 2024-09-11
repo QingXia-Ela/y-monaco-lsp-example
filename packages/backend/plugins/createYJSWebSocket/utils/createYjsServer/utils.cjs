@@ -272,7 +272,8 @@ const setupWSConnection = (conn, req, { docName = (req.url || '').slice(1).split
     } else if (doc.conns.has(conn)) {
       pongReceived = false
       try {
-        conn.ping()
+        // see readme, here must send a byte so ping can use on Bun
+        conn.ping(0)
       } catch (e) {
         closeConn(doc, conn)
         clearInterval(pingInterval)

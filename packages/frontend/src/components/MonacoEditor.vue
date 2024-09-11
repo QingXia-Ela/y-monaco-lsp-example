@@ -22,6 +22,7 @@ import { configureMonacoWorkers, runClient } from '../monaco/client-new'
 import { ref } from 'vue';
 import { WebsocketProvider } from 'y-websocket'
 import updateConnectorStyle from '../monaco/utils/updateConnectorStyle'
+import { onBeforeUnmount } from 'vue';
 
 const COOPconnected = ref(false)
 let outerProvider: WebsocketProvider | null = null
@@ -59,6 +60,12 @@ onMounted(async () => {
     }
   })
   // wrapper.
+})
+
+onBeforeUnmount(() => {
+  if (outerProvider) {
+    outerProvider.disconnect()
+  }
 })
 </script>
 

@@ -4,6 +4,7 @@ import { createWSProxy } from "./utils";
 import { createYJSServerByVanilla } from "./utils/createYjsServer/server.cjs";
 
 const wssMap = new Map<string, WebSocket>()
+const wssRawMap = new Map<any, string>()
 
 // todo!: impl userId get
 export default function createYJSWebSocket({
@@ -19,13 +20,15 @@ export default function createYJSWebSocket({
     .ws('/yjs', {
       body: t.Uint8Array(),
       open(ws) {
-        wssMap.set(ws.id, createWSProxy(ws, `ws://localhost:${yjsServerPort}/yjs`))
+        const wsProxy = createWSProxy(ws, `ws://localhost:${yjsServerPort}/yjs`)
+        wssMap.set(ws.id, wsProxy)
       },
       message(ws, message) {
         wssMap.get(ws.id)?.send(message)
       },
       close(ws, code, message) {
         wssMap.get(ws.id)?.close(code, message)
+        wssMap.delete(ws.id)
       },
     })
-}
+} 

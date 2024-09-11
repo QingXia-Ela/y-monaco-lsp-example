@@ -16,7 +16,5 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "scripts": {
-    "dev": "bun run index.ts"
-  }
+  "scripts": {}
 }
