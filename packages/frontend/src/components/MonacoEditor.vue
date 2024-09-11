@@ -6,8 +6,8 @@
       <button type="button" @click="() => switchConnect()" id="y-connect-btn">{{ COOPconnected ? 'Disconnect-COOP' :
         'Connect-COOP'
         }}</button>
-      <input type="text" id="y-name-input" placeholder="Your name">
-      <button type="button" id="y-set-btn">Set Name</button>
+      <input type="text" id="y-name-input" placeholder="Name cannot change when connected" v-model="userName"
+        :disabled="COOPconnected">
     </div>
     <p></p>
     <p>This is a demo of the <a href="https://github.com/yjs/yjs">Yjs</a> + <a
@@ -30,11 +30,25 @@ import { onBeforeUnmount } from 'vue';
 import { MonacoLanguageClient } from 'monaco-languageclient';
 import { State } from 'vscode-languageclient';
 import { computed } from 'vue';
+import { watch } from 'vue';
 
 const COOPconnected = ref(false)
 const lspConnected = ref<State>(State.Stopped)
+const userName = ref("Ushio noa")
 let outerProvider: WebsocketProvider | null = null
 let outerLanguageClient: MonacoLanguageClient | null = null
+
+watch(userName, (n) => {
+  if (outerProvider) {
+    // if client is disconnect but server doesn't know it.
+    // use old clientID will cause document broken permanently.
+    // so when reconnect happen, we should give it a new clientID.
+    // or make server disconnect old socket.
+    // in production, you should add a api to get a clientID safety to prevent conflict.
+    // outerProvider.awareness.clientID = parseInt((Math.random() * 10000000000) as any)
+    outerProvider.roomname = `?name=${n}&ydocClientId=${outerProvider.awareness.clientID}`
+  }
+})
 
 const lspText = computed(() => {
   switch (lspConnected.value) {
@@ -47,7 +61,21 @@ const lspText = computed(() => {
   }
 })
 
+async function updateUserList() {
+  const res = await (await fetch('http://localhost:30002/users')).json() as Array<{
+    name: string
+    socketId: string
+    ydocClientId: string
+  }>
+
+  return res
+}
+
 function switchConnect(connect = !COOPconnected.value) {
+  if (!userName.value.length) {
+    alert("Name cannot be empty")
+    return
+  }
   if (outerProvider) {
     if (outerProvider.shouldConnect || !connect) {
       outerProvider.disconnect()
@@ -71,38 +99,45 @@ function switchLsp() {
   }
 }
 
+let clearTimer: any = null
+
 onMounted(async () => {
   configureMonacoWorkers();
   const {
     provider,
     languageClient,
-  } = await runClient();
+  } = await runClient({
+    name: userName.value,
+  });
   outerProvider = provider
   outerLanguageClient = languageClient
 
-  switchConnect()
   provider.awareness.on("change", () => {
     if (!provider.awareness.getLocalState()) {
       switchConnect(false)
     }
-    else {
+  })
+
+  clearTimer = setInterval(() => {
+    updateUserList().then((res) => {
       updateConnectorStyle(
-        Array.from(provider.awareness.meta.keys()),
+        Array.from(res),
         document.getElementById("yRemoteUserStyle") as HTMLStyleElement
       )
-    }
-  })
+    })
+  }, 10000)
+
   languageClient.onDidChangeState((e) => {
     lspConnected.value = e.newState
   })
   languageClient.start()
-  // lspSocket
 })
 
 onBeforeUnmount(() => {
   if (outerProvider) {
     outerProvider.disconnect()
   }
+  clearInterval(clearTimer)
 })
 </script>
 

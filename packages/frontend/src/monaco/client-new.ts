@@ -25,7 +25,9 @@ export const configureMonacoWorkers = () => {
     }
   });
 };
-export const runClient = async () => {
+export const runClient = async ({
+  name
+}: { name: string }) => {
   await initServices({
     serviceConfig: {
       userServices: {
@@ -57,9 +59,10 @@ export const runClient = async () => {
   const {
     provider,
   } = injectYjsToEditor({
+    name,
     editor,
     targetHost: 'ws://localhost:30002/yjs',
-    textID: 'monaco'
+    textID: 'monaco',
   })
 
   return {

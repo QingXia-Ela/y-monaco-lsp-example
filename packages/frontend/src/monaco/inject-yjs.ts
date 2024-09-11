@@ -4,6 +4,7 @@ import { WebsocketProvider } from 'y-websocket'
 import { MonacoBinding } from 'y-monaco'
 
 export default function injectYjsToEditor({
+  name,
   editor,
   /**
    * Target host is the final url to connect with server.
@@ -20,6 +21,7 @@ export default function injectYjsToEditor({
    */
   textID
 }: {
+  name: string,
   editor: monaco.editor.IStandaloneCodeEditor,
   targetHost: string,
   roomName?: string,
@@ -28,7 +30,14 @@ export default function injectYjsToEditor({
   const ydoc = new Y.Doc()
   const type = ydoc.getText(textID)
 
-  const provider = new WebsocketProvider(targetHost, roomName, ydoc)
+  const provider = new WebsocketProvider(
+    `${targetHost}`,
+    roomName + `?name=${name}&ydocClientId=${ydoc.clientID}`,
+    ydoc,
+    {
+      connect: false
+    }
+  )
   /** @see https://github.com/yjs/y-monaco/issues/6 */
   const newModel = monaco.editor.createModel("", "mdx");
   newModel.setEOL(0); // Sets EOL to \n
@@ -40,9 +49,6 @@ export default function injectYjsToEditor({
     new Set([editor]),
     provider.awareness
   )
-
-  // disconnect first to prevent retry from reconnecting
-  provider.disconnect()
 
   return {
     provider,
