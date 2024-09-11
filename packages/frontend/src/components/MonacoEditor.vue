@@ -1,6 +1,8 @@
 <template>
   <div class="wrapper">
     <div class="flex gap-1">
+      <button type="button" @click="() => switchLsp()" :disabled="lspConnected === State.Starting">{{ lspText
+        }}</button>
       <button type="button" @click="() => switchConnect()" id="y-connect-btn">{{ COOPconnected ? 'Disconnect-COOP' :
         'Connect-COOP'
         }}</button>
@@ -23,9 +25,25 @@ import { ref } from 'vue';
 import { WebsocketProvider } from 'y-websocket'
 import updateConnectorStyle from '../monaco/utils/updateConnectorStyle'
 import { onBeforeUnmount } from 'vue';
+import { MonacoLanguageClient } from 'monaco-languageclient';
+import { State } from 'vscode-languageclient';
+import { computed } from 'vue';
 
 const COOPconnected = ref(false)
+const lspConnected = ref<State>(State.Stopped)
 let outerProvider: WebsocketProvider | null = null
+let outerLanguageClient: MonacoLanguageClient | null = null
+
+const lspText = computed(() => {
+  switch (lspConnected.value) {
+    case State.Starting:
+      return 'LSP Starting...'
+    case State.Stopped:
+      return 'Start LSP Service'
+    default:
+      return 'Stop LSP Service'
+  }
+})
 
 function switchConnect(connect = !COOPconnected.value) {
   if (outerProvider) {
@@ -40,12 +58,25 @@ function switchConnect(connect = !COOPconnected.value) {
   }
 }
 
+function switchLsp() {
+  if (outerLanguageClient) {
+    if (outerLanguageClient.state === State.Running) {
+      outerLanguageClient.stop()
+    }
+    else if (outerLanguageClient.state === State.Stopped) {
+      outerLanguageClient.start()
+    }
+  }
+}
+
 onMounted(async () => {
   configureMonacoWorkers();
   const {
-    provider
+    provider,
+    languageClient,
   } = await runClient();
   outerProvider = provider
+  outerLanguageClient = languageClient
 
   switchConnect()
   provider.awareness.on("change", () => {
@@ -59,7 +90,11 @@ onMounted(async () => {
       )
     }
   })
-  // wrapper.
+  languageClient.onDidChangeState((e) => {
+    lspConnected.value = e.newState
+  })
+  languageClient.start()
+  // lspSocket
 })
 
 onBeforeUnmount(() => {

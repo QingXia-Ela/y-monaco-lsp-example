@@ -11,7 +11,7 @@ import getTextmateServiceOverride from '@codingame/monaco-vscode-textmate-servic
 // import '@codingame/monaco-vscode-theme-defaults-default-extension';
 // import '@codingame/monaco-vscode-mdx-default-extension';
 import { MonacoLanguageClient } from 'monaco-languageclient';
-import { WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
+import { IWebSocket, WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
 import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclient';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { conf, language } from 'monaco-editor-vanilla/esm/vs/basic-languages/mdx/mdx';
@@ -53,7 +53,7 @@ export const runClient = async () => {
     theme: 'vs-dark',
     wordBasedSuggestions: 'off'
   });
-  initWebSocketAndStartClient('ws://localhost:30002/grammar');
+  const languageClient = await initWebSocketAndStartClient('ws://localhost:30002/grammar');
   const {
     provider,
   } = injectYjsToEditor({
@@ -63,28 +63,54 @@ export const runClient = async () => {
   })
 
   return {
+    languageClient,
     provider
   }
 };
 
+const getLspWebsocket = (url: string) => {
+  return new Promise<{
+    socket: WebSocket,
+    reader: WebSocketMessageReader,
+    writer: WebSocketMessageWriter
+  }>((resolve, reject) => {
+    const webSocket = new WebSocket(url);
+    webSocket.onopen = () => {
+      const socket = toSocket(webSocket);
+      const reader = new WebSocketMessageReader(socket);
+      const writer = new WebSocketMessageWriter(socket);
+      resolve({
+        socket: webSocket,
+        reader,
+        writer
+      })
+    }
+
+    webSocket.onerror = reject
+  })
+}
+
+// function transportsGetter(url: string) {
+//       return new Promise<MessageTransports & {socket: WebSocket}>((resolve, reject) => {
+//     const webSocket = new WebSocket(url);
+//     webSocket.onopen = () => {
+//       const socket = toSocket(webSocket);
+//       const reader = new WebSocketMessageReader(socket);
+//       const writer = new WebSocketMessageWriter(socket);
+
+//       resolve({
+//       })
+//     };
+//   })
+// }
+
 /** parameterized version , support all languageId */
-export const initWebSocketAndStartClient = (url: string): WebSocket => {
-  const webSocket = new WebSocket(url);
-  webSocket.onopen = () => {
-    const socket = toSocket(webSocket);
-    const reader = new WebSocketMessageReader(socket);
-    const writer = new WebSocketMessageWriter(socket);
-    const languageClient = createLanguageClient({
-      reader,
-      writer
-    });
-    languageClient.start();
-    reader.onClose(() => languageClient.stop());
-  };
-  return webSocket;
+const initWebSocketAndStartClient = (url: string) => {
+  const languageClient = createLanguageClient(() => getLspWebsocket(url));
+  return languageClient
 };
 
-export const createLanguageClient = (transports: MessageTransports): MonacoLanguageClient => {
+export const createLanguageClient = (transportsGetter: () => Promise<MessageTransports>): MonacoLanguageClient => {
   return new MonacoLanguageClient({
     name: 'Sample Language Client',
     clientOptions: {
@@ -98,9 +124,9 @@ export const createLanguageClient = (transports: MessageTransports): MonacoLangu
     },
     // create a language client connection from the mdx RPC connection on demand
     connectionProvider: {
-      get: () => {
-        return Promise.resolve(transports);
-      }
+      get: async () => {
+        return await transportsGetter();
+      },
     }
   });
 };
