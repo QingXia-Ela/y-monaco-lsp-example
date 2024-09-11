@@ -90,20 +90,6 @@ const getLspWebsocket = (url: string) => {
   })
 }
 
-// function transportsGetter(url: string) {
-//       return new Promise<MessageTransports & {socket: WebSocket}>((resolve, reject) => {
-//     const webSocket = new WebSocket(url);
-//     webSocket.onopen = () => {
-//       const socket = toSocket(webSocket);
-//       const reader = new WebSocketMessageReader(socket);
-//       const writer = new WebSocketMessageWriter(socket);
-
-//       resolve({
-//       })
-//     };
-//   })
-// }
-
 /** parameterized version , support all languageId */
 const initWebSocketAndStartClient = (url: string) => {
   const languageClient = createLanguageClient(() => getLspWebsocket(url));

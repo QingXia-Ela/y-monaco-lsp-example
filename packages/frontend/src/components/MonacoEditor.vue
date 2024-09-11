@@ -10,10 +10,12 @@
       <button type="button" id="y-set-btn">Set Name</button>
     </div>
     <p></p>
-    <!-- <p>This is a demo of the <a href="https://github.com/yjs/yjs">Yjs</a> ⇔ <a
+    <p>This is a demo of the <a href="https://github.com/yjs/yjs">Yjs</a> + <a
+        href="https://github.com/TypeFox/monaco-languageclient">Monaco Language Client</a> ⇔ <a
         href="https://microsoft.github.io/monaco-editor/">Monaco</a> binding: <a
-        href="https://github.com/yjs/y-monaco">y-monaco</a>.</p>
-    <p>The content of this editor is shared with every client that visits this domain.</p> -->
+        href="https://github.com/QingXia-Ela/y-monaco-lsp-example">y-monaco-lsp-example</a>.</p>
+    <p>The content of this editor is shared with every client that visits this domain.</p>
+    <p>Backend should running manually.</p>
     <div id="monaco" />
   </div>
 </template>
@@ -106,7 +108,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .wrapper {
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
+  padding: 1rem;
 }
 </style>

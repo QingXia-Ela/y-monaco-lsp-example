@@ -4,12 +4,10 @@ Still processing!
 
 This is a yjs binding for monaco example, features is:
 
-- edit mdx
-- yjs binding
-- custom lsp support
-- use bun as backend
-- local file write
-- support user login
-- online user list
-- chat online
-- document compare
+- [x] edit mdx
+- [x] yjs binding
+- [x] custom lsp support
+- [x] use bun as backend
+- [ ] local file write
+- [ ] support user login
+- [ ] online user list
