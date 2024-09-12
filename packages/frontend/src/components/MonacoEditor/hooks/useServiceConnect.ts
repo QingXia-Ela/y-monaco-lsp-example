@@ -5,13 +5,14 @@ import { MonacoLanguageClient } from 'monaco-languageclient'
 import updateConnectorStyle from '../../../monaco/utils/updateConnectorStyle'
 import { State } from 'vscode-languageclient'
 
+interface UserInfo {
+  name: string
+  socketId: string
+  ydocClientId: string
+}
 
 async function updateUserList() {
-  const res = await (await fetch('http://localhost:30002/users')).json() as Array<{
-    name: string
-    socketId: string
-    ydocClientId: string
-  }>
+  const res = await (await fetch('http://localhost:30002/users')).json() as Array<UserInfo>
 
   return res
 }
@@ -25,6 +26,7 @@ export function useServiceConnect(
   const lspConnected = ref<State>(State.Stopped)
   const outerProvider = { value: null as WebsocketProvider | null }
   const outerLanguageClient = { value: null as MonacoLanguageClient | null }
+  const users = ref<Array<UserInfo>>([])
   let clearTimer: any = null
 
   watch(
@@ -72,6 +74,17 @@ export function useServiceConnect(
 
   async function rerenderUsers() {
     const res = await updateUserList()
+    users.value = res
+    if (outerProvider.value) {
+      const keys = Array.from(outerProvider.value?.awareness.meta.keys())
+      // remove unexist user
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        if (!res.find((u) => parseInt(u.ydocClientId) === key)) {
+          outerProvider.value.awareness.setLocalStateField(key.toString(), null)
+        }
+      }
+    }
     updateConnectorStyle(
       Array.from(res.filter((u) => u.name !== name.value)),
       document.getElementById("yRemoteUserStyle") as HTMLStyleElement
@@ -89,10 +102,14 @@ export function useServiceConnect(
       lspHost: 'ws://localhost:30002/grammar',
     });
 
-    provider.awareness.on("change", () => {
+    provider.awareness.on("update", () => {
       if (!provider.awareness.getLocalState()) {
         switchCoopConnect(false)
       }
+    })
+
+    languageClient.onDidChangeState(() => {
+      lspConnected.value = languageClient.state
     })
 
     clearTimer = setInterval(() => {
@@ -119,5 +136,6 @@ export function useServiceConnect(
     switchLspConnect,
     initProvider,
     rerenderUsers,
+    users,
   }
 }

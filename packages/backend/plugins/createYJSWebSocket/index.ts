@@ -1,6 +1,6 @@
 import Elysia, { t } from "elysia";
 import WebSocket from 'ws'
-import { createWSProxy } from "./utils";
+import { createLocalFileWritter, createWSProxy } from "./utils";
 import { createYJSServerByVanilla } from "./utils/createYjsServer/server.cjs";
 import { logger } from "./logger";
 
@@ -23,7 +23,9 @@ export default function createYJSWebSocket({
 }) {
   // todo!: add program buffer send?
   createYJSServerByVanilla(yjsServerPort)
+  createLocalFileWritter(`ws://localhost:${serverPort}`, 'yjs')
   return new Elysia()
+    // we don't suggest use polling to update user
     .get("/users", ({ set }) => {
       set.headers['Access-Control-Allow-Origin'] = '*';
       return Array.from(userMap.values()).flat(2)

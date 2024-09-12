@@ -1,5 +1,9 @@
 import { Elysia, t } from 'elysia'
 import WebSocket from 'ws'
+import fs from 'fs/promises'
+import { WebsocketProvider } from 'y-websocket'
+import * as Y from 'yjs'
+import { debounce } from 'lodash'
 
 type WS = Parameters<Exclude<Parameters<Elysia['ws']>[1]['open'], undefined>>[0]
 export function createWSProxy(
@@ -12,6 +16,26 @@ export function createWSProxy(
     .on("message", ws.send)
 
   return wss
+}
+
+const debouceWriteFile = debounce(
+  (path, data) => fs.writeFile(path, data), 1000
+)
+
+export function createLocalFileWritter(
+  url: string,
+  docName: string
+) {
+  const doc = new Y.Doc()
+  const provider = new WebsocketProvider(url, docName + '?name=localSaver' + `&ydocClientId=${doc.clientID}`, doc, {
+    // @ts-ignore
+    WebSocketPolyfill: WebSocket
+  })
+
+  fs.mkdir("./docs", { recursive: true })
+  doc.on("update", () => {
+    debouceWriteFile(`./docs/${docName}.mdx`, doc.getText("monaco").toJSON())
+  })
 }
 
 /*

@@ -14,7 +14,7 @@ function updateConnectorStyle(users: {
       userMap[name] = {
         name,
         ydocClientId,
-        color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
+        color: `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
       }
     } else {
       userMap[name].ydocClientId = ydocClientId

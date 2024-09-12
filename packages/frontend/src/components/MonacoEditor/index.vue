@@ -16,6 +16,7 @@
         href="https://github.com/QingXia-Ela/y-monaco-lsp-example">y-monaco-lsp-example</a>.</p>
     <p>The content of this editor is shared with every client that visits this domain.</p>
     <p>Backend should running manually.</p>
+    <p>Users: <code>{{ userText }}</code></p>
     <div id="monaco" />
   </div>
 </template>
@@ -42,6 +43,7 @@ const lspText = computed(() => {
 })
 
 const {
+  users,
   coopConnected,
   lspConnected,
   switchCoopConnect,
@@ -52,6 +54,14 @@ const {
   userName,
   "ws://localhost:30002/yjs",
 )
+
+const userText = computed(() => {
+  if (coopConnected.value) {
+    return Array.from(new Set(users.value.map((u) => u.name))).join(', ')
+  } else {
+    return 'There is no user because you are not connected.'
+  }
+})
 
 onMounted(() => {
   initProvider()
