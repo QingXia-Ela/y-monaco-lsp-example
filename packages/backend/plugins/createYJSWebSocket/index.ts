@@ -2,6 +2,7 @@ import Elysia, { t } from "elysia";
 import WebSocket from 'ws'
 import { createWSProxy } from "./utils";
 import { createYJSServerByVanilla } from "./utils/createYjsServer/server.cjs";
+import { logger } from "./logger";
 
 const wssMap = new Map<string, WebSocket>()
 
@@ -38,6 +39,7 @@ export default function createYJSWebSocket({
         const { data: { query: { name, ydocClientId } } } = ws
         const wsProxy = createWSProxy(ws, `ws://localhost:${yjsServerPort}/yjs`)
         wssMap.set(ws.id, wsProxy)
+        logger('open', name, ydocClientId);
 
         if (!userMap.has(name)) {
           userMap.set(name, [])
@@ -53,11 +55,14 @@ export default function createYJSWebSocket({
       },
       close(ws, code, message) {
         const { data: { query: { name, ydocClientId } } } = ws
+        logger('close', name, ydocClientId);
+
         wssMap.get(ws.id)?.close(code, message)
         wssMap.delete(ws.id)
         const target = userMap.get(name)
         if (target) {
-          target.splice(target.findIndex((item) => item.ydocClientId === ydocClientId) ?? -1, 1)
+          const index = target.findIndex((item) => item.ydocClientId === ydocClientId)
+          if (index !== -1) target.splice(index, 1)
         }
       },
     })

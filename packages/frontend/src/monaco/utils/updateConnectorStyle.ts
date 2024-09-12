@@ -7,6 +7,8 @@ function updateConnectorStyle(users: {
   // const currentUsers = Object.keys(users)
   // const newUsers = currentUsers.filter(user => !userMap[user])
   // const removedUsers = Object.keys(userMap).filter(user => !currentUsers.includes(user))
+  const newMap: Record<string, { name: string; color: string; ydocClientId: string }> = {}
+
   users.forEach(({ name, ydocClientId }) => {
     if (!userMap[name]) {
       userMap[name] = {
@@ -14,10 +16,13 @@ function updateConnectorStyle(users: {
         ydocClientId,
         color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
       }
+    } else {
+      userMap[name].ydocClientId = ydocClientId
     }
+    newMap[name] = userMap[name]
   });
 
-  style.innerHTML = Object.keys(userMap).map(user => {
+  style.innerHTML = Object.keys(newMap).map(user => {
     const { name, color, ydocClientId: ydocId } = userMap[user]
     return `.yRemoteSelection-${ydocId} { background-color: ${color}88 } 
     .yRemoteSelectionHead-${ydocId} { border-color: ${color} } 

@@ -26,8 +26,10 @@ export const configureMonacoWorkers = () => {
   });
 };
 export const runClient = async ({
-  name
-}: { name: string }) => {
+  name,
+  yjsHost,
+  lspHost,
+}: { name: string, yjsHost: string, lspHost: string }) => {
   await initServices({
     serviceConfig: {
       userServices: {
@@ -55,13 +57,13 @@ export const runClient = async ({
     theme: 'vs-dark',
     wordBasedSuggestions: 'off'
   });
-  const languageClient = await initWebSocketAndStartClient('ws://localhost:30002/grammar');
+  const languageClient = initWebSocketAndStartClient(lspHost);
   const {
     provider,
   } = injectYjsToEditor({
     name,
     editor,
-    targetHost: 'ws://localhost:30002/yjs',
+    targetHost: yjsHost,
     textID: 'monaco',
   })
 

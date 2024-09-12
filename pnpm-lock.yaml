@@ -19,7 +19,7 @@ importers:
     dependencies:
       elysia:
         specifier: ^1.0.27
-        version: 1.0.27(@sinclair/typebox@0.32.34)(typescript@5.2.2)
+        version: 1.0.27(@sinclair/typebox@0.33.9)(typescript@5.2.2)
       lib0:
         specifier: ^0.2.97
         version: 0.2.97
@@ -1305,8 +1305,8 @@ packages:
     dev: true
     optional: true
 
-  /@sinclair/typebox@0.32.34:
-    resolution: {integrity: sha512-a3Z3ytYl6R/+7ldxx04PO1semkwWlX/8pTqxsPw4quIcIXDFPZhOc1Wx8azWmkU26ccK3mHwcWenn0avNgAKQg==}
+  /@sinclair/typebox@0.33.9:
+    resolution: {integrity: sha512-agK7y8hO5Gz4Thu5kxTtLiZudNRflR1rTwmnWW5skxMd/+aqQ9XQene8HyyBsiajs5HV6ZQ/pCd3IKsqIfu4Kw==}
     dev: false
 
   /@types/acorn@4.0.6:
@@ -1998,7 +1998,7 @@ packages:
     resolution: {integrity: sha512-1OfuVACu+zKlmjsNdcJuVQuVE61sZOLbNM4JAQ1Rvh6EOj0/EUKhMJjRH73InPlXSh8HIJk1cVZ8pyOV/FMdUQ==}
     dev: true
 
-  /elysia@1.0.27(@sinclair/typebox@0.32.34)(typescript@5.2.2):
+  /elysia@1.0.27(@sinclair/typebox@0.33.9)(typescript@5.2.2):
     resolution: {integrity: sha512-mf76BUZeLyw459KbKL+LLy+KtwOV152EfeZWp3p1fivbqEGu20IKbqkDmpiwzJxIz26ifp6Y3gQ0d4UizFvHrw==}
     peerDependencies:
       '@sinclair/typebox': '>= 0.31.0'
@@ -2010,7 +2010,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@sinclair/typebox': 0.32.34
+      '@sinclair/typebox': 0.33.9
       cookie: 0.6.0
       eventemitter3: 5.0.1
       fast-decode-uri-component: 1.0.1

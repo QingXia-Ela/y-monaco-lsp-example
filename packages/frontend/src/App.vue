@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MonacoEditor from './components/MonacoEditor.vue';
+import MonacoEditor from './components/MonacoEditor/index.vue';
 
 </script>
 
