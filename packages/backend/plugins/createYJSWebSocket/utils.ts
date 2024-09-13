@@ -19,7 +19,7 @@ export function createWSProxy(
 }
 
 const debouceWriteFile = debounce(
-  (path, data) => fs.writeFile(path, data), 1000
+  (path, data) => fs.writeFile(path, data), 2000
 )
 
 export function createLocalFileWritter(
@@ -27,15 +27,29 @@ export function createLocalFileWritter(
   docName: string
 ) {
   const doc = new Y.Doc()
+  // Use global only ID to prevent content repeat problem
   const provider = new WebsocketProvider(url, docName + '?name=localSaver' + `&ydocClientId=${doc.clientID}`, doc, {
     // @ts-ignore
     WebSocketPolyfill: WebSocket
   })
-
   fs.mkdir("./docs", { recursive: true })
-  doc.on("update", () => {
-    debouceWriteFile(`./docs/${docName}.mdx`, doc.getText("monaco").toJSON())
+  if (doc.getText().length === 0)
+    fs.readFile(`./docs/${docName}.mdx`, 'utf-8').then((data) => {
+      doc.getText().insert(0, data)
+    })
+
+
+  // doc.on("beforeTransaction", (t, doc) => {
+  //   // console.log("afterTransaction");
+  // })
+
+  doc.on("afterTransaction", (t, doc) => {
+    debouceWriteFile(`./docs/${docName}.mdx`, doc.getText().toJSON())
   })
+
+  // doc.transact((t) => {
+  //   console.log(t.l);
+  // })
 }
 
 /*

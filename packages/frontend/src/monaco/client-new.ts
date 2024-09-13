@@ -64,7 +64,7 @@ export const runClient = async ({
     name,
     editor,
     targetHost: yjsHost,
-    textID: 'monaco',
+    textID: '',
   })
 
   return {

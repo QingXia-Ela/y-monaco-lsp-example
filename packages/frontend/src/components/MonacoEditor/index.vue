@@ -3,11 +3,9 @@
     <div class="flex gap-1">
       <button type="button" @click="() => switchLspConnect()" :disabled="lspConnected === State.Starting">{{ lspText
         }}</button>
-      <button type="button" @click="() => switchCoopConnect()" id="y-connect-btn">{{ coopConnected ? 'Disconnect-COOP' :
-        'Connect-COOP'
-        }}</button>
+      <button type="button" @click="() => switchCoopConnect()" id="y-connect-btn">{{ coopText }}</button>
       <input type="text" id="y-name-input" placeholder="Name cannot change when connected" v-model="userName"
-        :disabled="coopConnected">
+        :disabled="coopConnected !== 'disconnected'">
     </div>
     <p></p>
     <p>This is a demo of the <a href="https://github.com/yjs/yjs">Yjs</a> + <a
@@ -39,6 +37,14 @@ const lspText = computed(() => {
       return 'Start LSP Service'
     default:
       return 'Stop LSP Service'
+  }
+})
+
+const coopText = computed(() => {
+  switch (coopConnected.value) {
+    case 'connected': return "Disconnect-COOP"
+    case 'disconnected': return "Connect-COOP"
+    case 'connecting': return "Connecting-COOP (Click to cancel)"
   }
 })
 

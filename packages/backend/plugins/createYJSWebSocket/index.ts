@@ -28,7 +28,7 @@ export default function createYJSWebSocket({
     // we don't suggest use polling to update user
     .get("/users", ({ set }) => {
       set.headers['Access-Control-Allow-Origin'] = '*';
-      return Array.from(userMap.values()).flat(2)
+      return Array.from(userMap.values()).flat(2).filter((item) => item.name !== "localSaver")
     })
     .ws('/yjs', {
       body: t.Uint8Array(),

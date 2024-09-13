@@ -11,6 +11,8 @@ interface UserInfo {
   ydocClientId: string
 }
 
+type CoopConnectState = "connected" | "disconnected" | "connecting"
+
 async function updateUserList() {
   const res = await (await fetch('http://localhost:30002/users')).json() as Array<UserInfo>
 
@@ -22,7 +24,7 @@ export function useServiceConnect(
   targetHost: string,
   roomName = '',
 ) {
-  const coopConnected = ref(false)
+  const coopConnected = ref<CoopConnectState>("disconnected")
   const lspConnected = ref<State>(State.Stopped)
   const outerProvider = { value: null as WebsocketProvider | null }
   const outerLanguageClient = { value: null as MonacoLanguageClient | null }
@@ -44,18 +46,20 @@ export function useServiceConnect(
     }
   )
 
-  const switchCoopConnect = (connect = !coopConnected.value) => {
+  const switchCoopConnect = (connect = coopConnected.value === "disconnected") => {
     if (!name.value.length) {
       alert("Name cannot be empty")
       return
     }
     if (outerProvider.value) {
+      if (coopConnected.value === "connecting") {
+        outerProvider.value.disconnect()
+        return
+      }
       if (outerProvider.value.shouldConnect || !connect) {
         outerProvider.value.disconnect()
-        coopConnected.value = false
       } else {
         outerProvider.value.connect()
-        coopConnected.value = true
       }
     }
   }
@@ -87,7 +91,8 @@ export function useServiceConnect(
     }
     updateConnectorStyle(
       Array.from(res.filter((u) => u.name !== name.value)),
-      document.getElementById("yRemoteUserStyle") as HTMLStyleElement
+      document.getElementById("yRemoteUserStyle") as HTMLStyleElement,
+      outerProvider.value!
     )
   }
 
@@ -106,6 +111,13 @@ export function useServiceConnect(
       if (!provider.awareness.getLocalState()) {
         switchCoopConnect(false)
       }
+    })
+
+    provider.on("status", ({ status }: { status: CoopConnectState }) => {
+      coopConnected.value = status
+    })
+    provider.on("connection-error", () => {
+      coopConnected.value = "disconnected"
     })
 
     languageClient.onDidChangeState(() => {

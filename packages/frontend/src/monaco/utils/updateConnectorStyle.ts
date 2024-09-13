@@ -1,9 +1,11 @@
+import { WebsocketProvider } from "y-websocket";
+
 const userMap: Record<string, { name: string; color: string; ydocClientId: string }> = {}
 
 function updateConnectorStyle(users: {
   ydocClientId: string
   name: string
-}[], style: HTMLStyleElement) {
+}[], style: HTMLStyleElement, provider?: WebsocketProvider) {
   // const currentUsers = Object.keys(users)
   // const newUsers = currentUsers.filter(user => !userMap[user])
   // const removedUsers = Object.keys(userMap).filter(user => !currentUsers.includes(user))
