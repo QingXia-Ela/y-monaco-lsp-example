@@ -13,7 +13,7 @@ const host = process.env.HOST || 'localhost'
  * @typedef {import('http').Server} Server
  */
 
-/** @type {Server} */
+/** @type {Server & {getYDoc: () => import('yjs').Doc | null}} */
 let cacheServer = null
 
 /**
@@ -23,7 +23,7 @@ let cacheServer = null
  * @param {function(import('http').IncomingMessage): boolean} [authFn] A function that checks if the
  *   request is allowed to connect to the server. If the function returns false,
  *   the connection is closed.
- * @returns {Server} The created http server.
+ * @returns {Server & {getYDoc: () => import('yjs').Doc | null}} The created http server.
  */
 function createYJSServerByVanilla(
   port = 1234,
@@ -40,8 +40,17 @@ function createYJSServerByVanilla(
       response.end('okay')
     })
 
+    server.getYDoc = () => null
+
     // Set up the websocket connection.
-    wss.on('connection', setupWSConnection)
+    wss.on('connection', (...args) => {
+      const { doc } = setupWSConnection(...args)
+      // if don't clean awareness client which doesn't has long time login, it may lead to oom
+      doc.on("update", () => {
+        console.log(Array.from(doc.awareness.meta.keys()));
+      })
+      server.getYDoc = () => doc
+    })
 
     // Handle upgrade requests (i.e. websocket connections).
     server.on('upgrade', (request, socket, head) => {

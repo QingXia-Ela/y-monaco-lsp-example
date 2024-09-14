@@ -16,6 +16,8 @@ import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclie
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { conf, language } from 'monaco-editor-vanilla/esm/vs/basic-languages/mdx/mdx';
 import injectYjsToEditor from './inject-yjs';
+import { Awareness } from 'y-protocols/awareness';
+import mergeText from './utils/mergeText';
 
 export const configureMonacoWorkers = () => {
   useWorkerFactory({
@@ -66,10 +68,35 @@ export const runClient = async ({
     targetHost: yjsHost,
     textID: '',
   })
+  const text = provider.doc.getText()
+
+  provider.on("status", ({ status }: { status: string }) => {
+    if (status === "connected") {
+      const oldText = text.toJSON()
+      provider.doc.once("afterAllTransactions", () => {
+
+        text.delete(0, oldText.length)
+        const newText = text.toJSON()
+        const merge = mergeText(oldText, newText)
+        console.log({
+          merge,
+          oldText,
+          newText
+        });
+
+        editor.setValue(merge)
+        // console.log({
+        //   oldText,
+        //   newText,
+        // });
+      })
+    }
+  })
 
   return {
     languageClient,
-    provider
+    provider,
+    editor
   }
 };
 

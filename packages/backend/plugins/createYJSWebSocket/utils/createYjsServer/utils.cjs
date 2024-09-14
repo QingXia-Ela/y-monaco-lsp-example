@@ -303,6 +303,11 @@ const setupWSConnection = (conn, req, { docName = (req.url || '').slice(1).split
       send(doc, conn, encoding.toUint8Array(encoder))
     }
   }
+
+  return {
+    connection: conn,
+    doc
+  }
 }
 
 export {

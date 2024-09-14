@@ -38,8 +38,16 @@ export default function injectYjsToEditor({
       connect: false
     }
   )
-  // disable auto reconnect
-  provider.maxBackoffTime = 0
+  // provider.on("connection-error", () => {
+  //   // disable auto reconnect
+  //   provider.shouldConnect = false
+  // })
+  // provider.on("connection-close", () => {
+  //   // disable auto reconnect
+  //   provider.shouldConnect = false
+  // })
+
+
   /** @see https://github.com/yjs/y-monaco/issues/6 */
   const newModel = monaco.editor.createModel("", "mdx");
   newModel.setEOL(0); // Sets EOL to \n

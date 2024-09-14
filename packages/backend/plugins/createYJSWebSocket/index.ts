@@ -22,14 +22,18 @@ export default function createYJSWebSocket({
   serverPort: number
 }) {
   // todo!: add program buffer send?
-  createYJSServerByVanilla(yjsServerPort)
+  const server = createYJSServerByVanilla(yjsServerPort)
   createLocalFileWritter(`ws://localhost:${serverPort}`, 'yjs')
   return new Elysia()
     // we don't suggest use polling to update user
-    .get("/users", ({ set }) => {
+    .onAfterHandle(({ set }) => {
       set.headers['Access-Control-Allow-Origin'] = '*';
+    })
+    .get("/users", () => {
       return Array.from(userMap.values()).flat(2).filter((item) => item.name !== "localSaver")
     })
+    .get("/serverCid", () => server.getYDoc()?.clientID || null)
+    .get("/doc", () => Bun.file("./docs/yjs.mdx"))
     .ws('/yjs', {
       body: t.Uint8Array(),
       query: t.Object({

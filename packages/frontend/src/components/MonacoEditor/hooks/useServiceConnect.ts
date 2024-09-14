@@ -30,6 +30,7 @@ export function useServiceConnect(
   const outerLanguageClient = { value: null as MonacoLanguageClient | null }
   const users = ref<Array<UserInfo>>([])
   let clearTimer: any = null
+  console.log(outerProvider)
 
   watch(
     name,
@@ -101,16 +102,25 @@ export function useServiceConnect(
     const {
       provider,
       languageClient,
+      editor
     } = await runClient({
       name: name.value,
       yjsHost: targetHost,
       lspHost: 'ws://localhost:30002/grammar',
     });
 
-    provider.awareness.on("update", () => {
+    editor.onDidChangeModelContent(() => {
+      // todo!: add save content to local storage
+    })
+
+    provider.awareness.on("update", (e) => {
       if (!provider.awareness.getLocalState()) {
         switchCoopConnect(false)
       }
+    })
+
+    provider.doc.on("update", () => {
+      console.log(provider.doc.getText().toDelta());
     })
 
     provider.on("status", ({ status }: { status: CoopConnectState }) => {

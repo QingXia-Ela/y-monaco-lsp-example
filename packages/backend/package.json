@@ -4,8 +4,10 @@
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/diff": "^5.2.2",
     "@types/lodash": "^4.17.7",
     "@types/ws": "^8.5.12",
+    "diff": "^7.0.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
