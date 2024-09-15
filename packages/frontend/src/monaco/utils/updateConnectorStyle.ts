@@ -2,6 +2,21 @@ import { WebsocketProvider } from "y-websocket";
 
 const userMap: Record<string, { name: string; color: string; ydocClientId: string }> = {}
 
+const usercolors = [
+  '#30bced',
+  '#6eeb83',
+  '#ffbc42',
+  '#ecd444',
+  '#ee6352',
+  '#9ac2c9',
+  '#8acb88',
+  '#1be7ff'
+]
+
+export function pickColor() {
+  return usercolors[Math.floor(Math.random() * usercolors.length)]
+}
+
 function updateConnectorStyle(users: {
   ydocClientId: string
   name: string
@@ -16,7 +31,7 @@ function updateConnectorStyle(users: {
       userMap[name] = {
         name,
         ydocClientId,
-        color: `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
+        color: pickColor()
       }
     } else {
       userMap[name].ydocClientId = ydocClientId

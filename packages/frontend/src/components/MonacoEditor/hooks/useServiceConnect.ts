@@ -113,14 +113,10 @@ export function useServiceConnect(
       // todo!: add save content to local storage
     })
 
-    provider.awareness.on("update", (e) => {
+    provider.awareness.on("update", () => {
       if (!provider.awareness.getLocalState()) {
         switchCoopConnect(false)
       }
-    })
-
-    provider.doc.on("update", () => {
-      console.log(provider.doc.getText().toDelta());
     })
 
     provider.on("status", ({ status }: { status: CoopConnectState }) => {

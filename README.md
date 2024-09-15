@@ -12,6 +12,11 @@ This is a yjs binding for monaco example, features is:
 - [x] support user login
 - [x] online user list
 
+## Environment
+
+- Bun - v1.1.17
+- pnpm - v8.6.12
+
 ## Some unresolve problems
 
 - LSP will have much instance instead of one instance and send same message to each client
@@ -47,3 +52,12 @@ A: Same name user can still operate like a new user, and it will use orange mark
 - 保存 Yjs doc 上下文（无现成解决方案）
 
 本示例实现的是由客户端自动处理 diff 再同步回服务端的实现，不建议生产环境下直接使用。
+
+### 高性能与Benchmark
+
+参考文章：https://github.com/pubuzhixing8/awesome-collaboration/blob/master/crdt/yjs/are-crdts-suitable-for-shared-editing.md
+
+### yjs 数据结构以及协议传输内容
+
+https://mp.weixin.qq.com/s/cHqXWL54TKSQjL33JSGQ_w - 这篇文章比较草率，细节不是很丰富，但是了解底层基本数据结构还是没问题的
+
