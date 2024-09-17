@@ -2,6 +2,7 @@ import * as monaco from 'monaco-editor'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { MonacoBinding } from 'y-monaco'
+import { IndexeddbPersistence } from 'y-indexeddb'
 
 export default function injectYjsToEditor({
   name,
@@ -38,6 +39,8 @@ export default function injectYjsToEditor({
       connect: false
     }
   )
+
+  const persistence = new IndexeddbPersistence("", ydoc)
   // provider.on("connection-error", () => {
   //   // disable auto reconnect
   //   provider.shouldConnect = false

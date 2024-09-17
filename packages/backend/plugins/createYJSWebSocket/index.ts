@@ -3,6 +3,7 @@ import WebSocket from 'ws'
 import { createLocalFileWritter, createWSProxy } from "./utils";
 import { createYJSServerByVanilla } from "./utils/createYjsServer/server.cjs";
 import { logger } from "./logger";
+import createHocuspocusServer from "./utils/createHocuspocusServer";
 
 const wssMap = new Map<string, WebSocket>()
 
@@ -23,6 +24,7 @@ export default function createYJSWebSocket({
 }) {
   // todo!: add program buffer send?
   const server = createYJSServerByVanilla(yjsServerPort)
+  // const server = createHocuspocusServer(yjsServerPort)
   createLocalFileWritter(`ws://localhost:${serverPort}`, 'yjs')
   return new Elysia()
     // we don't suggest use polling to update user

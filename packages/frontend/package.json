@@ -21,6 +21,7 @@
     "vscode-languageclient": "^9.0.1",
     "vscode-ws-jsonrpc": "^3.3.2",
     "vue": "^3.4.29",
+    "y-indexeddb": "^9.0.12",
     "y-monaco": "^0.1.6",
     "y-protocols": "^1.0.6",
     "y-websocket": "^2.0.4",
