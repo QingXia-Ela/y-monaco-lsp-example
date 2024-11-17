@@ -43,12 +43,12 @@ function createYJSServerByVanilla(
     server.getYDoc = () => null
 
     // Set up the websocket connection.
-    wss.on('connection', (...args) => {
-      const { doc } = setupWSConnection(...args)
+    wss.on('connection', async (...args) => {
+      const { doc } = await setupWSConnection(...args)
       // if don't clean awareness client which doesn't has long time login, it may lead to oom
-      doc.on("update", () => {
-        console.log(Array.from(doc.awareness.meta.keys()));
-      })
+      // doc.on("update", () => {
+      //   console.log(Array.from(doc.awareness.meta.keys()));
+      // })
       server.getYDoc = () => doc
     })
 

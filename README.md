@@ -49,7 +49,7 @@ A: Same name user can still operate like a new user, and it will use orange mark
 目前解决的可能方案：
 - 禁用服务器宕机时的编辑操作（这是成本最低的管理方案，唯一要处理的就是如何确定服务器真宕机了），假如离线编辑时页面发生了刷新操作，则页面在刷新之前需要保留自己的 clientID，来保证恢复编辑路径。假如 clientID 丢失，则执行下面的 diff 操作（最坏情况）
 - 使用类似 git 的 diff 算法，在客户端连接时进行一次 diff 并重新修改结果（大文件和非纯文本效率低）
-- 保存 Yjs doc 上下文（无现成解决方案）
+- 保存 Yjs doc 上下文（考虑 `Y.snapshot` 存储连接上下文，注意 snapshot 仅存储客户端状态，不存储文字）
 
 本示例实现的是由客户端自动处理 diff 再同步回服务端的实现，不建议生产环境下直接使用。
 

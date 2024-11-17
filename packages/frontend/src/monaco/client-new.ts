@@ -11,12 +11,11 @@ import getTextmateServiceOverride from '@codingame/monaco-vscode-textmate-servic
 // import '@codingame/monaco-vscode-theme-defaults-default-extension';
 // import '@codingame/monaco-vscode-mdx-default-extension';
 import { MonacoLanguageClient } from 'monaco-languageclient';
-import { IWebSocket, WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
+import {  WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
 import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclient';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { conf, language } from 'monaco-editor-vanilla/esm/vs/basic-languages/mdx/mdx';
 import injectYjsToEditor from './inject-yjs';
-import { Awareness } from 'y-protocols/awareness';
 import mergeText from './utils/mergeText';
 
 export const configureMonacoWorkers = () => {
@@ -85,10 +84,6 @@ export const runClient = async ({
         });
 
         editor.setValue(merge)
-        // console.log({
-        //   oldText,
-        //   newText,
-        // });
       })
     }
   })

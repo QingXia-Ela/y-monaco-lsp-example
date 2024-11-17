@@ -2,7 +2,7 @@ import { Ref, onBeforeUnmount, ref, watch } from 'vue'
 import { WebsocketProvider } from 'y-websocket'
 import { configureMonacoWorkers, runClient } from '../../../monaco/client-new'
 import { MonacoLanguageClient } from 'monaco-languageclient'
-import updateConnectorStyle from '../../../monaco/utils/updateConnectorStyle'
+import updateConnectorStyle, { pickColor } from '../../../monaco/utils/updateConnectorStyle'
 import { State } from 'vscode-languageclient'
 
 interface UserInfo {
@@ -117,6 +117,11 @@ export function useServiceConnect(
       if (!provider.awareness.getLocalState()) {
         switchCoopConnect(false)
       }
+    })
+
+    provider.awareness.setLocalStateField("user", {
+      name: name.value,
+      color: pickColor(),
     })
 
     provider.on("status", ({ status }: { status: CoopConnectState }) => {

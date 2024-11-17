@@ -14,6 +14,11 @@ import debounce from 'lodash.debounce'
 
 import { callbackHandler } from './callback.cjs'
 import { isCallbackSet } from './callback.cjs'
+import fs from 'fs/promises'
+
+const debouceWriteFile = debounce(
+  (path, data) => fs.writeFile(path, data), 2000
+)
 
 const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT || '2000')
 const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT || '10000')
@@ -182,6 +187,8 @@ const messageListener = (conn, doc, message) => {
     const encoder = encoding.createEncoder()
     const decoder = decoding.createDecoder(message)
     const messageType = decoding.readVarUint(decoder)
+    console.log(messageType);
+
     switch (messageType) {
       case messageSync:
         encoding.writeVarUint(encoder, messageSync)
@@ -247,16 +254,28 @@ const send = (doc, conn, m) => {
 }
 
 const pingTimeout = 30000
+// let setWriteEvent = false
 
 /**
  * @param {import('ws').WebSocket} conn
  * @param {import('http').IncomingMessage} req
  * @param {any} opts
  */
-const setupWSConnection = (conn, req, { docName = (req.url || '').slice(1).split('?')[0], gc = true } = {}) => {
+const setupWSConnection = async (conn, req, { docName = (req.url || '').slice(1).split('?')[0], gc = false } = {}) => {
   conn.binaryType = 'arraybuffer'
   // get doc, initialize if it does not exist yet
   const doc = getYDoc(docName, gc)
+  // if (!setWriteEvent) {
+  //   setWriteEvent = true
+  //   await fs.mkdir("./docs", { recursive: true })
+
+  //   const data = await fs.readFile(`./docs/${docName}.mdx`, 'utf-8')
+  //   doc.getText().insert(0, data)
+
+  //   doc.on("afterTransaction", (t, doc) => {
+  //     debouceWriteFile(`./docs/${docName}.mdx`, doc.getText().toJSON())
+  //   })
+  // }
   doc.conns.set(conn, new Set())
   // listen and reply to events
   conn.on('message', /** @param {ArrayBuffer} message */ message => messageListener(conn, doc, new Uint8Array(message)))

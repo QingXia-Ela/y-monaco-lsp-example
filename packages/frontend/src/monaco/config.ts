@@ -4,10 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as vscode from 'vscode';
-import getEditorServiceOverride from '@codingame/monaco-vscode-editor-service-override';
 import { UserConfig } from 'monaco-editor-wrapper';
-import { useOpenEditorStub } from 'monaco-editor-wrapper/vscode/services';
-import { MonacoLanguageClient } from 'monaco-languageclient';
 
 export const createUserConfig = (workspaceRoot: string, code: string, codeUri: string): UserConfig => {
     return {

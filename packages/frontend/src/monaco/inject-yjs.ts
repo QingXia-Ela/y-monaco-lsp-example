@@ -41,15 +41,6 @@ export default function injectYjsToEditor({
   )
 
   const persistence = new IndexeddbPersistence("", ydoc)
-  // provider.on("connection-error", () => {
-  //   // disable auto reconnect
-  //   provider.shouldConnect = false
-  // })
-  // provider.on("connection-close", () => {
-  //   // disable auto reconnect
-  //   provider.shouldConnect = false
-  // })
-
 
   /** @see https://github.com/yjs/y-monaco/issues/6 */
   const newModel = monaco.editor.createModel("", "mdx");
