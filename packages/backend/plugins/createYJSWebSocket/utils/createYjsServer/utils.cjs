@@ -187,7 +187,6 @@ const messageListener = (conn, doc, message) => {
     const encoder = encoding.createEncoder()
     const decoder = decoding.createDecoder(message)
     const messageType = decoding.readVarUint(decoder)
-    console.log(messageType);
 
     switch (messageType) {
       case messageSync:

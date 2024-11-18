@@ -6,7 +6,6 @@
  * Copyright (c) 2024 TypeFox and others.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-// import 'vscode/localExtensionHost'
 // import '../assets/vsix/unifiedjs.vscode-mdx-1.8.10.vsix'
 // import * as monaco from 'monaco-editor';
 // import { initServices } from 'monaco-languageclient/vscode/services';
@@ -27,7 +26,6 @@
 // import '@codingame/monaco-vscode-json-default-extension';
 import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wrapper';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
-
 export const configureMonacoWorkers = () => {
     // override the worker factory with your own direct definition
     useWorkerFactory({

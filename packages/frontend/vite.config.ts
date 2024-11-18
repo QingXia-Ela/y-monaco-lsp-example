@@ -1,7 +1,6 @@
 import { defineConfig, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
-import vsixPlugin from '@codingame/monaco-vscode-rollup-vsix-plugin'
 
 const fullReloadAlways: Plugin = {
   name: 'full-reload',
@@ -18,6 +17,6 @@ export default defineConfig({
     esbuildOptions: {
       sourcemap: "inline",
       plugins: [importMetaUrlPlugin,]
-    }
-  }
+    },
+  },
 })

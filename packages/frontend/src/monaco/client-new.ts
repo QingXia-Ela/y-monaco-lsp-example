@@ -17,6 +17,7 @@ import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { conf, language } from 'monaco-editor-vanilla/esm/vs/basic-languages/mdx/mdx';
 import injectYjsToEditor from './inject-yjs';
 import mergeText from './utils/mergeText';
+import { UndoManager } from 'yjs';
 
 export const configureMonacoWorkers = () => {
   useWorkerFactory({
@@ -34,7 +35,6 @@ export const runClient = async ({
   await initServices({
     serviceConfig: {
       userServices: {
-        // ...getThemeServiceOverride(),
         ...getTextmateServiceOverride(),
       },
       debugLogging: true,
@@ -59,8 +59,10 @@ export const runClient = async ({
     wordBasedSuggestions: 'off'
   });
   const languageClient = initWebSocketAndStartClient(lspHost);
+
   const {
     provider,
+    monacoBinding,
   } = injectYjsToEditor({
     name,
     editor,
@@ -68,6 +70,32 @@ export const runClient = async ({
     textID: '',
   })
   const text = provider.doc.getText()
+
+  const undoManager = new UndoManager(text, {
+    trackedOrigins: new Set([monacoBinding]),
+  })
+
+  // register undo/redo
+    editor.addAction({
+      id: 'yjsUndo',
+      label: 'yjsUndo',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyZ],
+      run: (editor) => {
+        editor.pushUndoStop()
+        undoManager.undo()
+        console.log('undo');
+      }
+    })
+    editor.addAction({
+      id: 'yjsRedo',
+      label: 'yjsRedo',
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyY],
+      run: (editor) => {
+        editor.pushUndoStop()
+        undoManager.redo()
+        console.log('redo');
+      }
+    })
 
   provider.on("status", ({ status }: { status: string }) => {
     if (status === "connected") {
