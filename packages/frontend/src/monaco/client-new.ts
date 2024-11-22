@@ -71,6 +71,8 @@ export const runClient = async ({
   })
   const text = provider.doc.getText()
 
+  // todo!: composition input interrupt prevent
+
   const undoManager = new UndoManager(text, {
     trackedOrigins: new Set([monacoBinding]),
   })

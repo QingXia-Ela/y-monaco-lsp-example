@@ -11,6 +11,7 @@ This is a yjs binding for monaco example, features is:
 - [x] local file write
 - [x] support user login
 - [x] online user list
+- [x] undo manager
 
 ## Environment
 
@@ -61,3 +62,31 @@ A: Same name user can still operate like a new user, and it will use orange mark
 
 https://mp.weixin.qq.com/s/cHqXWL54TKSQjL33JSGQ_w - 这篇文章比较草率，细节不是很丰富，但是了解底层基本数据结构还是没问题的
 
+### monaco 源码内状态竞争
+
+在源码中 monaco change content 与 ytext 插入操作为互斥，但是他们不会因此丢失输入内容，原因是这个锁仅在插入执行期间激活
+
+对于monaco：
+
+applyEdits 触发 onContentChange 事件，这个过程不会有外部的 ytext 插入事件加入干扰，仅仅避免了 contentChange 造成的事件反复循环触发
+
+对于ytext：
+同理，他们的事件触发器都是同步的，不会因为互斥锁的存在而丢失输入内容
+
+### 中文等输入法组合输入打断问题
+
+以下代码可以证明这两个事件是同步事件，因此面对中文输入可以利用这个机制来获取最后一次输入内容并同步到远程内容
+
+```js
+  editor.onDidChangeModelContent(() => {
+    macroMark++
+    console.log("New macro task started with ID:",macroMark); // 114, first trigger
+    setTimeout(() => {
+      macroMark++
+      console.log("Next Macro:",macroMark); // 115, last trigger
+    });
+  })
+  editor.onDidCompositionEnd(() => {
+    console.log(macroMark); // 114, second trigger
+  })
+```
